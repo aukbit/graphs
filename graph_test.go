@@ -3,6 +3,7 @@ package graph
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -45,4 +46,30 @@ func TestAddEdge(t *testing.T) {
 		t.Fatalf("vertex 6 should be invalid")
 	}
 	fmt.Print(g.String())
+}
+
+func TestLoadTiny(t *testing.T) {
+	f, err := os.Open("tinyG.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	g, err := Load(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(g.String())
+}
+
+func TestLoadMedium(t *testing.T) {
+	f, err := os.Open("mediumG.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	g, err := Load(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(g.String())
 }

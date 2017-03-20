@@ -2,8 +2,12 @@
 package graph
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"io"
+	"strconv"
+	"strings"
 
 	"github.com/aukbit/cache/bag"
 )
@@ -30,6 +34,51 @@ func New(vertex uint) *Graph {
 			return o
 		}(),
 	}
+}
+
+func atoui(s string) uint {
+	n, err := strconv.ParseUint(s, 10, 32)
+	if err != nil {
+		panic(err)
+	}
+	return uint(n)
+}
+
+// Load accepts io.Reader
+// first line should contain number vertices
+// second line should contain number edges
+// next lines should contain a single edge v w
+func Load(f io.Reader) (g *Graph, err error) {
+	var i int
+	var vertexes, edges uint
+	s := bufio.NewScanner(f)
+	for s.Scan() {
+		ln := s.Text()
+		if i == 0 {
+			// read number vertexes
+			vertexes = atoui(ln)
+			g = New(vertexes)
+			i++
+			continue
+		}
+		if i == 1 {
+			// read number edges
+			edges = atoui(ln)
+			i++
+			continue
+		}
+		e := strings.Split(ln, " ")
+		err = g.AddEdge(atoui(e[0]), atoui(e[1]))
+		if err != nil {
+			return nil, err
+		}
+		i++
+	}
+	// validate the number of edges on the file
+	if g.E() != edges {
+		return nil, fmt.Errorf("file does not contain the right number of edges %v != %v ", edges, g.E())
+	}
+	return g, nil
 }
 
 // V number of vertices
