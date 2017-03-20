@@ -21,12 +21,13 @@ type Graph struct {
 func New(vertex uint) *Graph {
 	return &Graph{
 		v: vertex,
-		adj: func() (out []*bag.Bag) {
+		adj: func() []*bag.Bag {
+			o := make([]*bag.Bag, vertex)
 			var i uint
 			for i = 0; i < vertex; i++ {
-				out[i] = bag.New()
+				o[i] = bag.New()
 			}
-			return out
+			return o
 		}(),
 	}
 }
@@ -48,8 +49,8 @@ func (g *Graph) validateVertex(v uint) error {
 	return nil
 }
 
-// addEdge add the undirected edge v-w to this graph
-func (g *Graph) addEdge(v, w uint) error {
+// AddEdge add the undirected edge v-w to this graph
+func (g *Graph) AddEdge(v, w uint) error {
 	if err := g.validateVertex(v); err != nil {
 		return err
 	}
@@ -88,6 +89,7 @@ func (g *Graph) String() string {
 		iter := g.adj[i].Iterator()
 		for iter.HasNext() {
 			n, _ := iter.Next()
+			// fmt.Print(n)
 			buffer.WriteString(fmt.Sprintf("%v ", n))
 		}
 		buffer.WriteString("\n")
