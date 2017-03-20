@@ -2,6 +2,7 @@
 package graph
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/aukbit/cache/bag"
@@ -62,11 +63,34 @@ func (g *Graph) addEdge(v, w uint) error {
 }
 
 // Adj vertices adjancent to v
-func (g *Graph) Adj(v, w int) {
+func (g *Graph) Adj(v uint) (*bag.Bag, error) {
+	if err := g.validateVertex(v); err != nil {
+		return nil, err
+	}
+	return g.adj[v], nil
+}
 
+// Degree returns the degree of vertex
+func (g *Graph) Degree(v uint) (int, error) {
+	if err := g.validateVertex(v); err != nil {
+		return 0, err
+	}
+	return g.adj[v].Size(), nil
 }
 
 // String representation
 func (g *Graph) String() string {
-	return ""
+	var buffer bytes.Buffer
+	buffer.WriteString(fmt.Sprintf("vertices: %v, edges: %v\n", g.v, g.e))
+	var i uint
+	for i = 0; i < g.v; i++ {
+		buffer.WriteString(fmt.Sprintf("%v: ", i))
+		iter := g.adj[i].Iterator()
+		for iter.HasNext() {
+			n, _ := iter.Next()
+			buffer.WriteString(fmt.Sprintf("%v ", n))
+		}
+		buffer.WriteString("\n")
+	}
+	return buffer.String()
 }
